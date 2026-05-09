@@ -4,7 +4,7 @@ export abstract class Staff extends Personnel {
   private _position: string
 
   constructor(id: string, name: string, department: string, position: string) {
-    super(id, name, department, 20000)
+    super(id, name, department, 30000)
     this._position = position
   }
 

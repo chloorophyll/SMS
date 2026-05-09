@@ -2,16 +2,10 @@ import { Student } from './Student'
 
 export class Scholar extends Student {
   private _tuitionFee: number
-  private _scholarshipType: string
 
-  constructor(id: string, name: string, yearLevel: number, scholarshipType: string) {
+  constructor(id: string, name: string, yearLevel: number) {
     super(id, name, yearLevel)
     this._tuitionFee = 40000
-    this._scholarshipType = scholarshipType
-  }
-
-  getScholarshipType(): string {
-    return this._scholarshipType
 
   }
 
@@ -20,7 +14,8 @@ export class Scholar extends Student {
   }
 
   getStatus(): string {
-    return `Scholar - ${this._scholarshipType}`
+    return 'Scholar'
+
   }
   
   getInfo(): string {
@@ -31,3 +26,4 @@ export class Scholar extends Student {
     return 'Student'
   }
 }
+
