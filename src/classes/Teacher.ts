@@ -44,9 +44,17 @@ export class Teacher extends Personnel {
   }
 
   computeSalary(): number {
-    const multiplier =
-      (this._primarySubject && SUBJECT_MULTIPLIERS[this._primarySubject]) ||
-      DEFAULT_SUBJECT_MULTIPLIER;
+    let multiplier = DEFAULT_SUBJECT_MULTIPLIER;
+
+    if (this._primarySubject) {
+      if (SUBJECT_MULTIPLIERS[this._primarySubject]) {
+        multiplier = SUBJECT_MULTIPLIERS[this._primarySubject];
+      } else {
+        multiplier = DEFAULT_SUBJECT_MULTIPLIER;
+      }
+    } else {
+      multiplier = DEFAULT_SUBJECT_MULTIPLIER;
+    }
 
     const raw = this.getBaseSalary() + this._courseLoad * COURSE_BONUS;
     return Math.round(raw * multiplier);

@@ -54,7 +54,6 @@ const personnelList = document.getElementById(
 const logoutBtn = document.getElementById("logout-btn") as HTMLButtonElement;
 const userDisplay = document.getElementById("user-display") as HTMLSpanElement;
 
-// Autofill teacher name when role is selected
 roleDropdown.addEventListener("change", () => {
   if (roleDropdown.value === "teacher") {
     nameInput.value = currentTeacher.getName();
@@ -72,7 +71,6 @@ loginForm.addEventListener("submit", (event) => {
   if (!name || !role) return;
   currentUser = { name, role };
 
-  // If teacher logs in with the known teacher name, register them as personnel
   if (role === "teacher" && name === currentTeacher.getName()) {
     const exists = teachersRecords.some(
       (t) => t.getId() === currentTeacher.getId(),
@@ -125,15 +123,73 @@ function clearDashboard(): void {
   personnelList.innerHTML = "";
 }
 
+function yearLevelSelected(selectedYearLevel: number, level: number): string {
+  if (selectedYearLevel === level) {
+    return "selected";
+  } else {
+    return "";
+  }
+}
+
+function subjectSelected(selectedSubject: string, subject: string): string {
+  if (selectedSubject === subject) {
+    return "selected";
+  } else {
+    return "";
+  }
+}
+
+function renderScholarshipSection(
+  selectedScholarshipLevel: "33%" | "50%" | "100%",
+): string {
+  if (currentUser?.role !== "scholar") {
+    return "";
+  }
+
+  let option33: string;
+  if (selectedScholarshipLevel === "33%") {
+    option33 = `<option value="33%" selected>33% Scholarship (PHP 26,800)</option>`;
+  } else {
+    option33 = `<option value="33%">33% Scholarship (PHP 26,800)</option>`;
+  }
+
+  let option50: string;
+  if (selectedScholarshipLevel === "50%") {
+    option50 = `<option value="50%" selected>50% Scholarship (PHP 20,000)</option>`;
+  } else {
+    option50 = `<option value="50%">50% Scholarship (PHP 20,000)</option>`;
+  }
+
+  let option100: string;
+  if (selectedScholarshipLevel === "100%") {
+    option100 = `<option value="100%" selected>100% Scholarship (Free)</option>`;
+  } else {
+    option100 = `<option value="100%">100% Scholarship (Free)</option>`;
+  }
+
+  return `
+  <div class="form-group">
+    <label for="scholarship-level-select">Scholarship Level</label>
+    <select id="scholarship-level-select" required>
+      ${option33}
+      ${option50}
+      ${option100}
+    </select>
+  </div>
+  `;
+}
+
 function renderStudentView(): void {
   const studentRecord = getStudentRecord(currentUser?.name ?? "");
   const selectedYearLevel = studentRecord?.getYearLevel() ?? 1;
   const selectedSubject =
     studentRecord?.getSubjectName() || classAssignment.subjectName;
-  const selectedScholarshipLevel =
-    studentRecord instanceof Scholar
-      ? studentRecord.getScholarshipLevel()
-      : "50%";
+  let selectedScholarshipLevel: "33%" | "50%" | "100%";
+  if (studentRecord instanceof Scholar) {
+    selectedScholarshipLevel = studentRecord.getScholarshipLevel();
+  } else {
+    selectedScholarshipLevel = "50%";
+  }
 
   studentList.innerHTML = `
     <div class="card">
@@ -142,10 +198,10 @@ function renderStudentView(): void {
         <div class="form-group">
           <label for="year-level-select">Year level</label>
           <select id="year-level-select" required>
-            <option value="1" ${selectedYearLevel === 1 ? "selected" : ""}>1</option>
-            <option value="2" ${selectedYearLevel === 2 ? "selected" : ""}>2</option>
-            <option value="3" ${selectedYearLevel === 3 ? "selected" : ""}>3</option>
-            <option value="4" ${selectedYearLevel === 4 ? "selected" : ""}>4</option>
+            <option value="1" ${yearLevelSelected(selectedYearLevel, 1)}>1</option>
+            <option value="2" ${yearLevelSelected(selectedYearLevel, 2)}>2</option>
+            <option value="3" ${yearLevelSelected(selectedYearLevel, 3)}>3</option>
+            <option value="4" ${yearLevelSelected(selectedYearLevel, 4)}>4</option>
           </select>
         </div>
 
@@ -155,7 +211,7 @@ function renderStudentView(): void {
             ${subjects
               .map(
                 (subject) => `
-              <option value="${classAssignment.className} - ${subject}" ${selectedSubject === subject ? "selected" : ""}>
+              <option value="${classAssignment.className} - ${subject}" ${subjectSelected(selectedSubject, subject)}>
                 ${classAssignment.className} - ${subject}
               </option>
             `,
@@ -164,16 +220,7 @@ function renderStudentView(): void {
           </select>
         </div>
 
-        ${currentUser?.role === "scholar" ? `
-        <div class="form-group">
-          <label for="scholarship-level-select">Scholarship Level</label>
-          <select id="scholarship-level-select" required>
-            <option value="33%" ${selectedScholarshipLevel === "33%" ? "selected" : ""}>33% Scholarship (PHP 26,800)</option>
-            <option value="50%" ${selectedScholarshipLevel === "50%" ? "selected" : ""}>50% Scholarship (PHP 20,000)</option>
-            <option value="100%" ${selectedScholarshipLevel === "100%" ? "selected" : ""}>100% Scholarship (Free)</option>
-          </select>
-        </div>
-        ` : ""}
+        ${renderScholarshipSection(selectedScholarshipLevel)}
 
         <button type="submit" class="login-btn">Save</button>
       </form>
@@ -185,7 +232,6 @@ function renderStudentView(): void {
     </div>
   `;
 
-  // Show registered teachers in the personnel column for students
   personnelList.innerHTML = renderTeachersList();
 
   bindStudentProfileForm();
@@ -193,32 +239,32 @@ function renderStudentView(): void {
 }
 
 function renderTeacherView(): void {
-  // For teachers, show Regular Students, Scholars, and Teachers; students are limited to those assigned to this teacher
   const assignedStudents = getStudentsForCurrentTeacher();
   const regulars = assignedStudents.filter((s) => s instanceof RegularStudent);
   const scholars = assignedStudents.filter((s) => s instanceof Scholar);
 
-  // ensure personnel column shows list of teachers
   personnelList.innerHTML = renderTeachersList();
 
   studentList.innerHTML = `
     <div class="card">
       <h3>Regular Students</h3>
-      ${renderStudentCards(regulars, "No regular students assigned.", true)}
+      ${renderStudentCards(regulars, "No regular students assigned.", false)}
     </div>
     <div class="card">
       <h3>Scholars</h3>
-      ${renderStudentCards(scholars, "No scholars assigned.", true)}
+      ${renderStudentCards(scholars, "No scholars assigned.", false)}
     </div>
   `;
 
-  // Populate the teacher detail column (show profile for the logged-in teacher if available)
-  const teacherObj =
-    teachersRecords.find((t) => t.getName() === currentUser?.name) ??
-    (currentUser?.name === currentTeacher.getName() ? currentTeacher : null);
+  let teacherObj: Teacher | null =
+    teachersRecords.find((t) => t.getName() === currentUser?.name) ?? null;
+  if (teacherObj === null && currentUser?.name === currentTeacher.getName()) {
+    teacherObj = currentTeacher;
+  }
   const teacherListEl = document.getElementById("teacher-list");
-  const teacherInfoHtml = teacherObj
-    ? `
+  let teacherInfoHtml: string;
+  if (teacherObj) {
+    teacherInfoHtml = `
       <div class="card">
         <h3>Teacher Information</h3>
         <p><strong>Name:</strong> ${teacherObj.getName()}</p>
@@ -228,19 +274,19 @@ function renderTeacherView(): void {
         <p><strong>Primary Subject:</strong> ${teacherObj.getPrimarySubject()}</p>
         <p><strong>Salary:</strong> PHP ${teacherObj.computeSalary()}</p>
       </div>
-    `
-    : `<div class="card"><h3>Teacher Information</h3><p>No profile available for ${currentUser?.name}</p></div>`;
+    `;
+  } else {
+    teacherInfoHtml = `<div class="card"><h3>Teacher Information</h3><p>No profile available for ${currentUser?.name}</p></div>`;
+  }
 
   if (teacherListEl) {
     teacherListEl.innerHTML = teacherInfoHtml;
   } else {
-    // fallback to personnel column
     personnelList.innerHTML = teacherInfoHtml + renderTeachersList();
   }
 }
 
 function renderAdministratorView(): void {
-  // Admin sees grouped students and teachers
   const allStudents = studentManager.getStudents();
   const regulars = allStudents.filter((s) => s instanceof RegularStudent);
   const scholars = allStudents.filter((s) => s instanceof Scholar);
@@ -306,7 +352,6 @@ function saveStudentProfile(): void {
   studentRecord.setSubjectName(selectedAssignment.subjectName);
   studentRecord.setAssignedTeacherName(selectedAssignment.teacherName);
 
-  // Handle scholarship level for scholars
   if (currentUser.role === "scholar" && studentRecord instanceof Scholar) {
     const scholarshipLevelSelect = document.getElementById(
       "scholarship-level-select",
@@ -345,8 +390,22 @@ function renderStudentCards(
   if (records.length === 0) return `<p>${emptyMessage}</p>`;
 
   return records
-    .map(
-      (studentRecord) => `
+    .map((studentRecord) => {
+      let tuitionHtml: string;
+      if (showTuition) {
+        tuitionHtml = `<p><strong>Tuition:</strong> PHP ${studentRecord.computeTuition()}</p>`;
+      } else {
+        tuitionHtml = "";
+      }
+
+      let deleteButtonHtml: string;
+      if (allowDelete) {
+        deleteButtonHtml = `<button class="delete-student-btn" data-id="${studentRecord.getId()}">Drop</button>`;
+      } else {
+        deleteButtonHtml = "";
+      }
+
+      return `
         <div class="card">
           <p><strong>Name:</strong> ${studentRecord.getName()}</p>
           <p><strong>ID:</strong> ${studentRecord.getId()}</p>
@@ -354,11 +413,11 @@ function renderStudentCards(
           <p><strong>Class:</strong> ${studentRecord.getClassName()}</p>
           <p><strong>Subject:</strong> ${studentRecord.getSubjectName()}</p>
           <p><strong>Teacher:</strong> ${studentRecord.getAssignedTeacherName()}</p>
-          ${showTuition ? `<p><strong>Tuition:</strong> PHP ${studentRecord.computeTuition()}</p>` : ""}
-          ${allowDelete ? `<button class="delete-student-btn" data-id="${studentRecord.getId()}">Drop</button>` : ""}
+          ${tuitionHtml}
+          ${deleteButtonHtml}
         </div>
-      `,
-    )
+      `;
+    })
     .join("");
 }
 
@@ -469,7 +528,6 @@ function updateLayoutForRole(role: Role): void {
     personnelCol.style.display = "block";
     teacherCol.style.display = "none";
 
-    // headers
     const sh = studentColumn.querySelector("h2") as HTMLHeadingElement | null;
     if (sh) sh.textContent = "Student Profile";
     const ph = personnelCol.querySelector("h2") as HTMLHeadingElement | null;
