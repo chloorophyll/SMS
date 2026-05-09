@@ -1,9 +1,11 @@
 import "./style.css";
 import { RegularStudent } from "./classes/RegularStudent";
 import { Teacher } from "./classes/Teacher";
+import { Scholar } from "./classes/Scholar";
+import { Student } from "./classes/Student";
 import { StudentManager } from "./managers/StudentManager";
 
-type Role = "student" | "teacher" | "administrator";
+type Role = "regular" | "scholar" | "teacher" | "administrator";
 
 interface User {
   name: string;
@@ -107,9 +109,16 @@ function hideDashboard(): void {
 
 function renderDashboard(): void {
   if (!currentUser) return;
+  updateLayoutForRole(currentUser.role);
   clearDashboard();
-  if (currentUser.role === "student") return renderStudentView();
-  if (currentUser.role === "teacher") return renderTeacherView();
+  if (currentUser.role === "regular" || currentUser.role === "scholar") {
+    renderStudentView();
+    return;
+  }
+  if (currentUser.role === "teacher") {
+    renderTeacherView();
+    return;
+  }
   renderAdministratorView();
 }
 
@@ -164,67 +173,74 @@ function renderStudentView(): void {
 
   // Show registered teachers in the personnel column for students
   personnelList.innerHTML = renderTeachersList();
-  const personnelHeader = document.querySelector<HTMLHeadingElement>('#personnel-column h2');
-  if (personnelHeader) personnelHeader.textContent = 'Personnel (Teachers)';
 
   bindStudentProfileForm();
   renderStudentSummary(studentRecord);
 }
 
 function renderTeacherView(): void {
+  // For teachers, show Regular Students, Scholars, and Teachers; students are limited to those assigned to this teacher
   const assignedStudents = getStudentsForCurrentTeacher();
+  const regulars = assignedStudents.filter((s) => s instanceof RegularStudent);
+  const scholars = assignedStudents.filter((s) => s instanceof Scholar);
+
+  // ensure personnel column shows list of teachers
+  personnelList.innerHTML = renderTeachersList();
+
   studentList.innerHTML = `
     <div class="card">
-      <h3>Students in My Class</h3>
-      ${renderStudentCards(assignedStudents, "No students have been saved for this class yet.", true)}
+      <h3>Regular Students</h3>
+      ${renderStudentCards(regulars, "No regular students assigned.", true)}
     </div>
-  `;
-
-  personnelList.innerHTML = `
     <div class="card">
-      <h3>Teacher Information</h3>
-      <p><strong>Name:</strong> ${currentTeacher.getName()}</p>
-      <p><strong>Department:</strong> ${currentTeacher.getDepartment()}</p>
-      <p><strong>Course Load:</strong> ${currentTeacher.getCourseLoad()}</p>
-      <p><strong>Class:</strong> ${classAssignment.className}</p>
-      <p><strong>Subject:</strong> ${classAssignment.subjectName}</p>
-      <p><strong>Salary:</strong> PHP ${currentTeacher.computeSalary()}</p>
+      <h3>Scholars</h3>
+      ${renderStudentCards(scholars, "No scholars assigned.", true)}
     </div>
   `;
-  // Show list of registered teachers in the personnel column and teacher info in teacher column
-  personnelList.innerHTML = renderTeachersList();
-  const personnelHeader = document.querySelector<HTMLHeadingElement>('#personnel-column h2');
-  if (personnelHeader) personnelHeader.textContent = 'Personnel (Teachers)';
 
-  const teacherListEl = document.getElementById('teacher-list');
-  if (teacherListEl) {
-    teacherListEl.innerHTML = `
+  // Populate the teacher detail column (show profile for the logged-in teacher if available)
+  const teacherObj = teachersRecords.find((t) => t.getName() === currentUser?.name) ?? (currentUser?.name === currentTeacher.getName() ? currentTeacher : null);
+  const teacherListEl = document.getElementById("teacher-list");
+  const teacherInfoHtml = teacherObj
+    ? `
       <div class="card">
         <h3>Teacher Information</h3>
-        <p><strong>Name:</strong> ${currentTeacher.getName()}</p>
-        <p><strong>Department:</strong> ${currentTeacher.getDepartment()}</p>
-        <p><strong>Course Load:</strong> ${currentTeacher.getCourseLoad()}</p>
-        <p><strong>Primary Subject:</strong> ${currentTeacher.getPrimarySubject()}</p>
-        <p><strong>Salary:</strong> PHP ${currentTeacher.computeSalary()}</p>
+        <p><strong>Name:</strong> ${teacherObj.getName()}</p>
+        <p><strong>ID:</strong> ${teacherObj.getId()}</p>
+        <p><strong>Department:</strong> ${teacherObj.getDepartment()}</p>
+        <p><strong>Course Load:</strong> ${teacherObj.getCourseLoad()}</p>
+        <p><strong>Primary Subject:</strong> ${teacherObj.getPrimarySubject()}</p>
+        <p><strong>Salary:</strong> PHP ${teacherObj.computeSalary()}</p>
       </div>
-    `;
+    `
+    : `<div class="card"><h3>Teacher Information</h3><p>No profile available for ${currentUser?.name}</p></div>`;
+
+  if (teacherListEl) {
+    teacherListEl.innerHTML = teacherInfoHtml;
+  } else {
+    // fallback to personnel column
+    personnelList.innerHTML = teacherInfoHtml + renderTeachersList();
   }
 }
 
 function renderAdministratorView(): void {
-  personnelList.innerHTML = `
+  // Admin sees grouped students and teachers
+  const allStudents = studentManager.getStudents();
+  const regulars = allStudents.filter((s) => s instanceof RegularStudent);
+  const scholars = allStudents.filter((s) => s instanceof Scholar);
+
+  studentList.innerHTML = `
     <div class="card">
-      <h3>Student List</h3>
-      ${renderStudentCards(studentManager.getStudents() as RegularStudent[], "No students have been saved yet.", true, true)}
+      <h3>Regular Students</h3>
+      ${renderStudentCards(regulars, "No regular students have been saved yet.", true, true)}
+    </div>
+    <div class="card">
+      <h3>Scholars</h3>
+      ${renderStudentCards(scholars, "No scholars have been saved yet.", true, true)}
     </div>
   `;
 
-  // Update personnel column header for administrator view
-  const personnelHeader = document.querySelector<HTMLHeadingElement>('#personnel-column h2');
-  if (personnelHeader) personnelHeader.textContent = 'Personnel';
-
-  // Also show teachers in the personnel column for admin
-  personnelList.innerHTML += renderTeachersList();
+  personnelList.innerHTML = renderTeachersList();
 
   bindDeleteButtons();
 }
@@ -271,10 +287,10 @@ function saveStudentProfile(): void {
   studentRecord.setClassName(selectedAssignment.className);
   studentRecord.setSubjectName(selectedAssignment.subjectName);
   studentRecord.setAssignedTeacherName(selectedAssignment.teacherName);
-  studentRecord.setBalanceDue(0);
+  // balance removed; no-op
 }
 
-function renderStudentSummary(studentRecord: RegularStudent | null): void {
+function renderStudentSummary(studentRecord: Student | null): void {
   const studentSummary = document.getElementById("student-summary");
   if (!studentSummary) return;
   if (!studentRecord) {
@@ -288,13 +304,11 @@ function renderStudentSummary(studentRecord: RegularStudent | null): void {
     <p><strong>Class:</strong> ${studentRecord.getClassName()}</p>
     <p><strong>Subject:</strong> ${studentRecord.getSubjectName()}</p>
     <p><strong>Teacher:</strong> ${studentRecord.getAssignedTeacherName()}</p>
-    <p><strong>Academic Standing:</strong> ${studentRecord.getAcademicStanding()}</p>
-    <p><strong>Balance Due:</strong> PHP ${studentRecord.getBalanceDue()}</p>
   `;
 }
 
 function renderStudentCards(
-  records: RegularStudent[],
+  records: Student[],
   emptyMessage: string,
   showTuition: boolean = true,
   allowDelete: boolean = false,
@@ -311,7 +325,6 @@ function renderStudentCards(
           <p><strong>Class:</strong> ${studentRecord.getClassName()}</p>
           <p><strong>Subject:</strong> ${studentRecord.getSubjectName()}</p>
           <p><strong>Teacher:</strong> ${studentRecord.getAssignedTeacherName()}</p>
-          <p><strong>Academic Standing:</strong> ${studentRecord.getAcademicStanding()}</p>
           ${showTuition ? `<p><strong>Tuition:</strong> PHP ${studentRecord.computeTuition()}</p>` : ""}
           ${allowDelete ? `<button class="delete-student-btn" data-id="${studentRecord.getId()}">Drop</button>` : ""}
         </div>
@@ -357,35 +370,79 @@ function handleDeleteClick(event: Event): void {
   renderDashboard();
 }
 
-function getStudentRecord(studentName: string): RegularStudent | null {
+function getStudentRecord(studentName: string): Student | null {
   const normalizedName = studentName.toLowerCase();
-  return (
-    (studentManager.getStudents() as RegularStudent[]).find(
-      (studentRecord) =>
-        studentRecord.getName().toLowerCase() === normalizedName,
-    ) ?? null
-  );
+  return studentManager.getStudents().find((studentRecord) => studentRecord.getName().toLowerCase() === normalizedName) ?? null;
 }
 
-function getOrCreateStudentRecord(
-  studentName: string,
-  yearLevel: number,
-): RegularStudent {
+function getOrCreateStudentRecord(studentName: string, yearLevel: number): Student {
   const existing = getStudentRecord(studentName);
   if (existing) return existing;
-  const studentId = `S-${String((studentManager.getStudents() as RegularStudent[]).length + 1).padStart(3, "0")}`;
+  const studentId = `S-${String(studentManager.getStudents().length + 1).padStart(3, "0")}`;
+  if (currentUser?.role === "scholar") {
+    const s = new Scholar(studentId, studentName, yearLevel);
+    studentManager.addStudent(s);
+    return s;
+  }
   const newStudent = new RegularStudent(studentId, studentName, yearLevel);
   studentManager.addStudent(newStudent);
   return newStudent;
 }
 
-function getStudentsForCurrentTeacher(): RegularStudent[] {
-  return (studentManager.getStudents() as RegularStudent[]).filter(
-    (studentRecord) =>
-      studentRecord.getAssignedTeacherName() === currentTeacher.getName(),
-  );
+function getStudentsForCurrentTeacher(): Student[] {
+  return studentManager.getStudents().filter((studentRecord) => studentRecord.getAssignedTeacherName() === currentTeacher.getName());
 }
 
 function formatRoleName(role: Role): string {
-  return role.charAt(0).toUpperCase() + role.slice(1);
+  switch (role) {
+    case "regular":
+      return "Regular Student";
+    case "scholar":
+      return "Scholar";
+    case "teacher":
+      return "Teacher";
+    case "administrator":
+      return "Administrator";
+    default:
+      return role;
+  }
+}
+
+function updateLayoutForRole(role: Role): void {
+  const studentColumn = document.getElementById("student-list")?.parentElement as HTMLElement | null;
+  const personnelCol = document.getElementById("personnel-column") as HTMLElement | null;
+  const teacherCol = document.getElementById("teacher-column") as HTMLElement | null;
+
+  if (!studentColumn || !personnelCol || !teacherCol) return;
+
+  if (role === "regular" || role === "scholar") {
+    studentColumn.style.display = "block";
+    personnelCol.style.display = "block"; // teachers
+    teacherCol.style.display = "none";
+
+    // headers
+    const sh = studentColumn.querySelector("h2") as HTMLHeadingElement | null;
+    if (sh) sh.textContent = "Student Profile";
+    const ph = personnelCol.querySelector("h2") as HTMLHeadingElement | null;
+    if (ph) ph.textContent = "Teachers";
+  } else if (role === "teacher") {
+    studentColumn.style.display = "block";
+    personnelCol.style.display = "none";
+    teacherCol.style.display = "block";
+
+    const sh = studentColumn.querySelector("h2") as HTMLHeadingElement | null;
+    if (sh) sh.textContent = "Students";
+    const th = teacherCol.querySelector("h2") as HTMLHeadingElement | null;
+    if (th) th.textContent = "Teacher Profile";
+  } else {
+    // administrator
+    studentColumn.style.display = "block";
+    personnelCol.style.display = "block";
+    teacherCol.style.display = "none";
+
+    const sh = studentColumn.querySelector("h2") as HTMLHeadingElement | null;
+    if (sh) sh.textContent = "Students";
+    const ph = personnelCol.querySelector("h2") as HTMLHeadingElement | null;
+    if (ph) ph.textContent = "Teachers";
+  }
 }

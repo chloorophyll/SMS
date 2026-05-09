@@ -3,10 +3,7 @@ import { UniversityEntity } from "./UniversityEntity";
 export abstract class Student extends UniversityEntity {
   private _yearLevel: number;
   private _isEnrolled: boolean;
-  private _gradePointAverage: number;
   private _enrolledCourses: string[];
-  private _balanceDue: number;
-  private _academicStanding: string;
   private _className: string;
   private _subjectName: string;
   private _assignedTeacherName: string;
@@ -15,10 +12,8 @@ export abstract class Student extends UniversityEntity {
     super(id, name);
     this._yearLevel = yearLevel;
     this._isEnrolled = false;
-    this._gradePointAverage = 0;
     this._enrolledCourses = [];
-    this._balanceDue = 0;
-    this._academicStanding = "Not Yet Recorded";
+    
     this._className = "";
     this._subjectName = "";
     this._assignedTeacherName = "";
@@ -47,19 +42,6 @@ export abstract class Student extends UniversityEntity {
   drop(): void {
     this._isEnrolled = false;
     this._enrolledCourses = [];
-  }
-
-  getGradePointAverage(): number {
-    return this._gradePointAverage;
-  }
-
-  setGradePointAverage(gradePointAverage: number): void {
-    this._gradePointAverage = gradePointAverage;
-    this.checkAcademicStanding();
-  }
-
-  updateGradePointAverage(gradePointAverage: number): void {
-    this.setGradePointAverage(gradePointAverage);
   }
 
   getEnrolledCourses(): string[] {
@@ -93,15 +75,15 @@ export abstract class Student extends UniversityEntity {
   }
 
   getBalanceDue(): number {
-    return this._balanceDue;
+    return 0;
   }
 
-  setBalanceDue(balanceDue: number): void {
-    this._balanceDue = balanceDue;
+  setBalanceDue(_: number): void {
+    // no-op
   }
 
   getAcademicStanding(): string {
-    return this._academicStanding;
+    return "";
   }
 
   getClassName(): string {
@@ -126,20 +108,6 @@ export abstract class Student extends UniversityEntity {
 
   setAssignedTeacherName(assignedTeacherName: string): void {
     this._assignedTeacherName = assignedTeacherName;
-  }
-
-  checkAcademicStanding(): string {
-    if (this._gradePointAverage === 0) {
-      this._academicStanding = "Not Yet Recorded";
-    } else if (this._gradePointAverage >= 3) {
-      this._academicStanding = "Good Standing";
-    } else if (this._gradePointAverage >= 2) {
-      this._academicStanding = "Probation";
-    } else {
-      this._academicStanding = "Academic Warning";
-    }
-
-    return this._academicStanding;
   }
 
   abstract computeTuition(): number;
