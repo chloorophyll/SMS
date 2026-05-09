@@ -1,13 +1,28 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>student-management</title>
+    <title>University System</title>
+    <link rel="stylesheet" href="./style.css">
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <h1>University Management System</h1>
+      
+      <div class="container">
+        <div class="column">
+          <h2>Students</h2>
+          <div id="student-list"></div>
+        </div>
+
+        <div class="column">
+          <h2>Personnel</h2>
+          <div id="personnel-list"></div>
+        </div>
+      </div>
+    </div>
+    
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
