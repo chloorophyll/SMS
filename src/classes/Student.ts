@@ -13,7 +13,7 @@ export abstract class Student extends UniversityEntity {
     this._yearLevel = yearLevel;
     this._isEnrolled = false;
     this._enrolledCourses = [];
-    
+
     this._className = "";
     this._subjectName = "";
     this._assignedTeacherName = "";
@@ -76,10 +76,6 @@ export abstract class Student extends UniversityEntity {
 
   getBalanceDue(): number {
     return 0;
-  }
-
-  setBalanceDue(_: number): void {
-    // no-op
   }
 
   getAcademicStanding(): string {
