@@ -573,6 +573,6 @@ function updateLayoutForRole(role: Role): void {
     const sh = studentColumn.querySelector("h2") as HTMLHeadingElement | null;
     if (sh) sh.textContent = "Students";
     const ph = personnelCol.querySelector("h2") as HTMLHeadingElement | null;
-    if (ph) ph.textContent = "Teachers";
+    if (ph) ph.textContent = "Personnel";
   }
 }
