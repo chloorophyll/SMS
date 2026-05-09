@@ -1,28 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>University System</title>
-    <link rel="stylesheet" href="./style.css">
+    <title>University Management System</title>
+    <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body>
     <div id="app">
-      <h1>University Management System</h1>
-      
-      <div class="container">
-        <div class="column">
-          <h2>Students</h2>
-          <div id="student-list"></div>
+      <div id="login-section" class="login-container">
+        <div class="login-card">
+          <h1>University Management System</h1>
+          <form id="login-form">
+            <div class="form-group">
+              <label for="name-input">Name:</label>
+              <input
+                type="text"
+                id="name-input"
+                placeholder="Enter your name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="role-dropdown">Role:</label>
+              <select id="role-dropdown" required>
+                <option value="">-- Select Role --</option>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+                <option value="administrator">Administrator</option>
+              </select>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+          </form>
+        </div>
+      </div>
+
+      <div
+        id="dashboard-section"
+        class="dashboard-container"
+        style="display: none"
+      >
+        <div class="navbar">
+          <h1>University Management System</h1>
+          <div class="user-info">
+            <span id="user-display"></span>
+            <button id="logout-btn" class="logout-btn">Logout</button>
+          </div>
         </div>
 
-        <div class="column">
-          <h2>Personnel</h2>
-          <div id="personnel-list"></div>
+        <div class="dashboard-content">
+          <div class="column">
+            <h2>Students</h2>
+            <div id="student-list"></div>
+          </div>
+
+          <div class="column" id="personnel-column">
+            <h2>Personnel</h2>
+            <div id="personnel-list"></div>
+          </div>
         </div>
       </div>
     </div>
-    
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -1,31 +1,67 @@
-import { Personnel } from './Personnel'
+import { Personnel } from "./Personnel";
 
-export abstract class Staff extends Personnel {
-  private _allowance: number
+// Salary-related constants (kept local to avoid extra file)
+const BASE_TEACHER_SALARY = 35000;
+const COURSE_BONUS = 5000;
+
+const SUBJECT_MULTIPLIERS: Record<string, number> = {
+  "Data Structures": 1.1,
+  "Database Systems": 1.05,
+  "Web Development": 1.0,
+};
+
+const DEFAULT_SUBJECT_MULTIPLIER = 1.0;
+
+export class Teacher extends Personnel {
+  private _courseLoad: number;
+  private _primarySubject: string | null;
 
   constructor(id: string, name: string, department: string) {
-    super(id, name, department, 35000)
-    this._allowance = 5000
+    super(id, name, department, BASE_TEACHER_SALARY);
+    this._courseLoad = 0;
+    this._primarySubject = null;
   }
 
-  getAllowance(): number {
-    return this._allowance
+  getCourseLoad(): number {
+    return this._courseLoad;
+  }
+
+  addCourse(): void {
+    this._courseLoad += 1;
+  }
+
+  removeCourse(): void {
+    if (this._courseLoad > 0) {
+      this._courseLoad -= 1;
+    }
+  }
+
+  setPrimarySubject(subjectName: string): void {
+    this._primarySubject = subjectName;
+  }
+
+  getPrimarySubject(): string | null {
+    return this._primarySubject;
   }
 
   computeSalary(): number {
-    return this.getBaseSalary() + this._allowance
+    const multiplier =
+      (this._primarySubject && SUBJECT_MULTIPLIERS[this._primarySubject]) ||
+      DEFAULT_SUBJECT_MULTIPLIER;
+
+    const raw = this.getBaseSalary() + this._courseLoad * COURSE_BONUS;
+    return Math.round(raw * multiplier);
   }
 
   getStatus(): string {
-    return 'Full Time Teacher'
+    return `Teacher - Teaching ${this._courseLoad} course(s)`;
   }
 
   getInfo(): string {
-    return `${this.getName()} | ID: ${this.getId()} | Dept: ${this.getDepartment()} | ${this.getStatus()} | Salary: PHP ${this.computeSalary()}`
+    return `${this.getName()} | ${this.getDepartment()} | ${this.getStatus()} | PHP ${this.computeSalary()}`;
   }
 
   getRole(): string {
-    return 'Teacher'
+    return "Teacher";
   }
 }
-

@@ -1,47 +1,34 @@
-import { Student } from '../classes/Student'
+import { Student } from "../classes/Student";
 
 export class StudentManager {
-    private _students: Student[]
+  private _students: Student[];
 
-    constructor() {
-        this ._students = []
+  constructor() {
+    this._students = [];
+  }
 
-    }
+  addStudent(student: Student): void {
+    this._students.push(student);
+  }
 
-    addStudent(student: Student): void {
-        this._students.push(student)
+  removeStudent(studentId: string): void {
+    this._students = this._students.filter(
+      (student) => student.getId() !== studentId,
+    );
+  }
 
-    }
+  getStudents(): Student[] {
+    return this._students;
+  }
 
-    removeStudent(studentId: string): void {
-        const result: Student[] = []
-        for (const student of this._students) {
-            if (student.getId() !== studentId) {
-                result.push(student)
-            }
-        }
-        this._students = result
-    }
+  findStudent(name: string): Student[] {
+    const normalizedName = name.toLowerCase();
+    return this._students.filter((student) =>
+      student.getName().toLowerCase().includes(normalizedName),
+    );
+  }
 
-    getStudents(): Student[] {
-        return this._students
-    }
-
-    findStudent(name: string): Student[] {
-        const result: Student[] = []
-        for(const student of this ._students) {
-            if (student.getName().toLowerCase().includes(name.toLowerCase()))
-                result.push(student)
-        }
-        return result
-    }   
-
-    getTotalStudents(): number {
-        return this._students.length
-
-    }
-    setStudents(students: Student[]): void {
-        this ._students = students
-
-    }
+  getTotalStudents(): number {
+    return this._students.length;
+  }
 }

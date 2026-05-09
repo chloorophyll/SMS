@@ -1,29 +1,35 @@
-import { Student } from './Student'
-export abstract class RegularStudent extends Student {
-    private _tuitionFee: number
+import { Student } from "./Student";
+export class RegularStudent extends Student {
+  private _tuitionFee: number;
+  private _maximumCoursesPerSemester: number;
 
-    constructor(id: string, name: string, yearLevel: number) {
-        super(id, name, yearLevel)
-        this._tuitionFee = 40000
+  constructor(id: string, name: string, yearLevel: number) {
+    super(id, name, yearLevel);
+    this._tuitionFee = 40000;
+    this._maximumCoursesPerSemester = 5;
+  }
+
+  enrollCourse(course: string): boolean {
+    if (this.getEnrolledCourses().length >= this._maximumCoursesPerSemester) {
+      return false;
     }
 
-    computeTuition(): number {
-        return this._tuitionFee
-    }
+    return super.enrollCourse(course);
+  }
 
-    getStatus(): string {
-        return 'Regular Student'
+  computeTuition(): number {
+    return this._tuitionFee;
+  }
 
-    }
+  getStatus(): string {
+    return `Regular Student - ${this.checkAcademicStanding()}`;
+  }
 
-    getInfo(): string {
-        return `${this.getName()} | ID: ${this.getId()} | Year Level: ${this.getYearLevel()} | ${this.getStatus()} | Tuition Fee: PHP ${this.computeTuition()}`
+  getInfo(): string {
+    return `${this.getName()} | ID: ${this.getId()} | Year Level: ${this.getYearLevel()} | Class: ${this.getClassName() || "Not assigned"} | Subject: ${this.getSubjectName() || "Not assigned"} | Teacher: ${this.getAssignedTeacherName() || "Not assigned"} | GPA: ${this.getGradePointAverage().toFixed(2)} | ${this.getStatus()} | Tuition Fee: PHP ${this.computeTuition()}`;
+  }
 
-    }
-
-    getRole(): string {
-        return 'Student'
-
-    }
+  getRole(): string {
+    return "Student";
+  }
 }
-
