@@ -6,7 +6,7 @@ export class Administrator extends Personnel {
   private _studentManager: StudentManager;
 
   constructor(
-    id: string,
+    id: number,
     name: string,
     department: string,
     position: string,
@@ -17,15 +17,15 @@ export class Administrator extends Personnel {
     this._studentManager = studentManager;
   }
 
-  dropStudent(studentId: string): void {
+  dropStudent(studentId: number): void {
     this._studentManager.removeStudent(studentId);
   }
 
   computeSalary(): number {
-    return this.getBaseSalary() + 10000;
+    return this.baseSalary() + 10000;
   }
 
-  getStatus(): string {
+  status(): string {
     return `Administrator - ${this._position}`;
   }
 }

@@ -5,7 +5,7 @@ export abstract class Personnel extends UniversityEntity {
   private _baseSalary: number;
 
   constructor(
-    id: string,
+    id: number,
     name: string,
     department: string,
     baseSalary: number,
@@ -15,18 +15,14 @@ export abstract class Personnel extends UniversityEntity {
     this._baseSalary = baseSalary;
   }
 
-  getDepartment(): string {
+  department(): string {
     return this._department;
   }
 
-  setDepartment(department: string): void {
-    this._department = department;
-  }
-
-  getBaseSalary(): number {
+  baseSalary(): number {
     return this._baseSalary;
   }
 
   abstract computeSalary(): number;
-  abstract getStatus(): string;
+  abstract status(): string;
 }

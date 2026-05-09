@@ -11,13 +11,13 @@ export class StudentManager {
     this._students.push(student);
   }
 
-  removeStudent(studentId: string): void {
+  removeStudent(studentId: number): void {
     this._students = this._students.filter(
-      (student) => student.getId() !== studentId,
+      (student) => student.id() !== studentId,
     );
   }
 
-  getStudents(): Student[] {
+  students(): Student[] {
     return this._students;
   }
 }

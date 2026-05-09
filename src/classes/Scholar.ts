@@ -5,16 +5,16 @@ export class Scholar extends Student {
   private _scholarshipStatus: string;
   private _scholarshipLevel: "33%" | "50%" | "100%" = "50%";
 
-  constructor(id: string, name: string, yearLevel: number) {
+  constructor(id: number, name: string, yearLevel: number) {
     super(id, name, yearLevel);
     this._scholarshipStatus = "Active";
   }
 
-  getScholarshipLevel(): "33%" | "50%" | "100%" {
+  scholarshipLevel(): "33%" | "50%" | "100%" {
     return this._scholarshipLevel;
   }
 
-  setScholarshipLevel(level: "33%" | "50%" | "100%"): void {
+  changeScholarshipLevel(level: "33%" | "50%" | "100%"): void {
     this._scholarshipLevel = level;
   }
 
@@ -28,7 +28,7 @@ export class Scholar extends Student {
     }
   }
 
-  getStatus(): string {
+  status(): string {
     return `Scholar - ${this._scholarshipStatus}`;
   }
 }

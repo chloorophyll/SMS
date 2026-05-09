@@ -8,7 +8,7 @@ export abstract class Student extends UniversityEntity {
   private _subjectName: string;
   private _assignedTeacherName: string;
 
-  constructor(id: string, name: string, yearLevel: number) {
+  constructor(id: number, name: string, yearLevel: number) {
     super(id, name);
     this._yearLevel = yearLevel;
     this._isEnrolled = false;
@@ -19,25 +19,16 @@ export abstract class Student extends UniversityEntity {
     this._assignedTeacherName = "";
   }
 
-  getYearLevel(): number {
+  yearLevel(): number {
     return this._yearLevel;
   }
 
-  setYearLevel(yearLevel: number): void {
+  changeYearLevel(yearLevel: number): void {
     this._yearLevel = yearLevel;
-  }
-
-  isEnrolled(): boolean {
-    return this._isEnrolled;
   }
 
   enroll(): void {
     this._isEnrolled = true;
-  }
-
-  drop(): void {
-    this._isEnrolled = false;
-    this._enrolledCourses = [];
   }
 
   enrollCourse(course: string): boolean {
@@ -66,30 +57,30 @@ export abstract class Student extends UniversityEntity {
     return true;
   }
 
-  getClassName(): string {
+  className(): string {
     return this._className;
   }
 
-  setClassName(className: string): void {
+  assignClass(className: string): void {
     this._className = className;
   }
 
-  getSubjectName(): string {
+  subjectName(): string {
     return this._subjectName;
   }
 
-  setSubjectName(subjectName: string): void {
+  assignSubject(subjectName: string): void {
     this._subjectName = subjectName;
   }
 
-  getAssignedTeacherName(): string {
+  assignedTeacher(): string {
     return this._assignedTeacherName;
   }
 
-  setAssignedTeacherName(assignedTeacherName: string): void {
+  assignTeacher(assignedTeacherName: string): void {
     this._assignedTeacherName = assignedTeacherName;
   }
 
   abstract computeTuition(): number;
-  abstract getStatus(): string;
+  abstract status(): string;
 }

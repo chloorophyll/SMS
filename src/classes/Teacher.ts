@@ -15,13 +15,13 @@ export class Teacher extends Personnel {
   private _courseLoad: number;
   private _primarySubject: string | null;
 
-  constructor(id: string, name: string, department: string) {
+  constructor(id: number, name: string, department: string) {
     super(id, name, department, BASE_TEACHER_SALARY);
     this._courseLoad = 0;
     this._primarySubject = null;
   }
 
-  getCourseLoad(): number {
+  courseLoad(): number {
     return this._courseLoad;
   }
 
@@ -29,11 +29,11 @@ export class Teacher extends Personnel {
     this._courseLoad += 1;
   }
 
-  setPrimarySubject(subjectName: string): void {
+  assignPrimarySubject(subjectName: string): void {
     this._primarySubject = subjectName;
   }
 
-  getPrimarySubject(): string | null {
+  primarySubject(): string | null {
     return this._primarySubject;
   }
 
@@ -50,11 +50,11 @@ export class Teacher extends Personnel {
       multiplier = DEFAULT_SUBJECT_MULTIPLIER;
     }
 
-    const raw = this.getBaseSalary() + this._courseLoad * COURSE_BONUS;
+    const raw = this.baseSalary() + this._courseLoad * COURSE_BONUS;
     return Math.round(raw * multiplier);
   }
 
-  getStatus(): string {
+  status(): string {
     return `Teacher - Teaching ${this._courseLoad} course(s)`;
   }
 }

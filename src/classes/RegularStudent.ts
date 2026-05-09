@@ -2,7 +2,7 @@ import { Student } from "./Student";
 export class RegularStudent extends Student {
   private _tuitionFee: number;
 
-  constructor(id: string, name: string, yearLevel: number) {
+  constructor(id: number, name: string, yearLevel: number) {
     super(id, name, yearLevel);
     this._tuitionFee = 40000;
   }
@@ -11,7 +11,7 @@ export class RegularStudent extends Student {
     return this._tuitionFee;
   }
 
-  getStatus(): string {
+  status(): string {
     return `Regular Student`;
   }
 }

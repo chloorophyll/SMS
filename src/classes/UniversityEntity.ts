@@ -1,21 +1,21 @@
 export abstract class UniversityEntity {
-  private _id: string;
+  private _id: number;
   private _name: string;
 
-  constructor(id: string, name: string) {
+  constructor(id: number, name: string) {
     this._id = id;
     this._name = name;
   }
 
-  getId(): string {
+  id(): number {
     return this._id;
   }
 
-  getName(): string {
+  name(): string {
     return this._name;
   }
 
-  setName(name: string): void {
+  rename(name: string): void {
     this._name = name;
   }
 }
