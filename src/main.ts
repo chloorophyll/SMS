@@ -130,6 +130,10 @@ function renderStudentView(): void {
   const selectedYearLevel = studentRecord?.getYearLevel() ?? 1;
   const selectedSubject =
     studentRecord?.getSubjectName() || classAssignment.subjectName;
+  const selectedScholarshipLevel =
+    studentRecord instanceof Scholar
+      ? studentRecord.getScholarshipLevel()
+      : "50%";
 
   studentList.innerHTML = `
     <div class="card">
@@ -159,6 +163,17 @@ function renderStudentView(): void {
               .join("")}
           </select>
         </div>
+
+        ${currentUser?.role === "scholar" ? `
+        <div class="form-group">
+          <label for="scholarship-level-select">Scholarship Level</label>
+          <select id="scholarship-level-select" required>
+            <option value="33%" ${selectedScholarshipLevel === "33%" ? "selected" : ""}>33% Scholarship (PHP 26,800)</option>
+            <option value="50%" ${selectedScholarshipLevel === "50%" ? "selected" : ""}>50% Scholarship (PHP 20,000)</option>
+            <option value="100%" ${selectedScholarshipLevel === "100%" ? "selected" : ""}>100% Scholarship (Free)</option>
+          </select>
+        </div>
+        ` : ""}
 
         <button type="submit" class="login-btn">Save</button>
       </form>
@@ -290,7 +305,17 @@ function saveStudentProfile(): void {
   studentRecord.setClassName(selectedAssignment.className);
   studentRecord.setSubjectName(selectedAssignment.subjectName);
   studentRecord.setAssignedTeacherName(selectedAssignment.teacherName);
-  // balance removed; no-op
+
+  // Handle scholarship level for scholars
+  if (currentUser.role === "scholar" && studentRecord instanceof Scholar) {
+    const scholarshipLevelSelect = document.getElementById(
+      "scholarship-level-select",
+    ) as HTMLSelectElement | null;
+    if (scholarshipLevelSelect) {
+      const level = scholarshipLevelSelect.value as "33%" | "50%" | "100%";
+      studentRecord.setScholarshipLevel(level);
+    }
+  }
 }
 
 function renderStudentSummary(studentRecord: Student | null): void {
@@ -307,6 +332,7 @@ function renderStudentSummary(studentRecord: Student | null): void {
     <p><strong>Class:</strong> ${studentRecord.getClassName()}</p>
     <p><strong>Subject:</strong> ${studentRecord.getSubjectName()}</p>
     <p><strong>Teacher:</strong> ${studentRecord.getAssignedTeacherName()}</p>
+    <p><strong>Tuition Fee:</strong> PHP ${studentRecord.computeTuition()}</p>
   `;
 }
 

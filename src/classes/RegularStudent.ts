@@ -1,20 +1,10 @@
 import { Student } from "./Student";
 export class RegularStudent extends Student {
   private _tuitionFee: number;
-  private _maximumCoursesPerSemester: number;
 
   constructor(id: string, name: string, yearLevel: number) {
     super(id, name, yearLevel);
     this._tuitionFee = 40000;
-    this._maximumCoursesPerSemester = 5;
-  }
-
-  enrollCourse(course: string): boolean {
-    if (this.getEnrolledCourses().length >= this._maximumCoursesPerSemester) {
-      return false;
-    }
-
-    return super.enrollCourse(course);
   }
 
   computeTuition(): number {

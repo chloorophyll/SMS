@@ -1,31 +1,36 @@
 import { Student } from "./Student";
 
 export class Scholar extends Student {
-  private _tuitionFee: number;
+  private _baseTuitionFee: number = 40000;
   private _scholarshipStatus: string;
-  private _maximumCoursesPerSemester: number;
+  private _scholarshipLevel: "33%" | "50%" | "100%" = "50%";
 
   constructor(id: string, name: string, yearLevel: number) {
     super(id, name, yearLevel);
-    this._tuitionFee = 20000;
     this._scholarshipStatus = "Active";
-    this._maximumCoursesPerSemester = 4;
-  }
-
-  enrollCourse(course: string): boolean {
-    if (this.getEnrolledCourses().length >= this._maximumCoursesPerSemester) {
-      return false;
-    }
-
-    return super.enrollCourse(course);
   }
 
   getScholarshipStatus(): string {
     return this._scholarshipStatus;
   }
 
+  getScholarshipLevel(): "33%" | "50%" | "100%" {
+    return this._scholarshipLevel;
+  }
+
+  setScholarshipLevel(level: "33%" | "50%" | "100%"): void {
+    this._scholarshipLevel = level;
+  }
+
   computeTuition(): number {
-    return this._tuitionFee;
+    if (this._scholarshipLevel === "33%") {
+      return Math.round(this._baseTuitionFee * 0.67);
+    } else if (this._scholarshipLevel === "50%") {
+      return Math.round(this._baseTuitionFee * 0.5);
+    } else {
+      // 100% scholarship
+      return 0;
+    }
   }
 
   getStatus(): string {
@@ -33,7 +38,7 @@ export class Scholar extends Student {
   }
 
   getInfo(): string {
-    return `${this.getName()} | ${this.getYearLevel()} | ${this.getStatus()} | PHP ${this.computeTuition()}`;
+    return `${this.getName()} | ${this.getYearLevel()} | ${this._scholarshipLevel} Scholarship | ${this.getStatus()} | PHP ${this.computeTuition()}`;
   }
 
   getRole(): string {
