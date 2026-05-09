@@ -1,6 +1,5 @@
 import { Personnel } from "./Personnel";
 
-// Salary-related constants (kept local to avoid extra file)
 const BASE_TEACHER_SALARY = 35000;
 const COURSE_BONUS = 5000;
 

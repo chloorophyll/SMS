@@ -21,11 +21,7 @@ interface ClassAssignment {
 const currentTeacher = new Teacher("T-001", "Maria Santos", "Computer Science");
 currentTeacher.addCourse();
 
-const subjects = [
-  "Data Structures",
-  "Database Systems",
-  "Web Development",
-];
+const subjects = ["Data Structures", "Database Systems", "Web Development"];
 
 const classAssignment: ClassAssignment = {
   className: "BSSE 2A",
@@ -78,7 +74,9 @@ loginForm.addEventListener("submit", (event) => {
 
   // If teacher logs in with the known teacher name, register them as personnel
   if (role === "teacher" && name === currentTeacher.getName()) {
-    const exists = teachersRecords.some((t) => t.getId() === currentTeacher.getId());
+    const exists = teachersRecords.some(
+      (t) => t.getId() === currentTeacher.getId(),
+    );
     if (!exists) teachersRecords.push(currentTeacher);
   }
 
@@ -130,7 +128,8 @@ function clearDashboard(): void {
 function renderStudentView(): void {
   const studentRecord = getStudentRecord(currentUser?.name ?? "");
   const selectedYearLevel = studentRecord?.getYearLevel() ?? 1;
-  const selectedSubject = studentRecord?.getSubjectName() || classAssignment.subjectName;
+  const selectedSubject =
+    studentRecord?.getSubjectName() || classAssignment.subjectName;
 
   studentList.innerHTML = `
     <div class="card">
@@ -199,7 +198,9 @@ function renderTeacherView(): void {
   `;
 
   // Populate the teacher detail column (show profile for the logged-in teacher if available)
-  const teacherObj = teachersRecords.find((t) => t.getName() === currentUser?.name) ?? (currentUser?.name === currentTeacher.getName() ? currentTeacher : null);
+  const teacherObj =
+    teachersRecords.find((t) => t.getName() === currentUser?.name) ??
+    (currentUser?.name === currentTeacher.getName() ? currentTeacher : null);
   const teacherListEl = document.getElementById("teacher-list");
   const teacherInfoHtml = teacherObj
     ? `
@@ -269,7 +270,9 @@ function saveStudentProfile(): void {
 
   const selectedYearLevel = Number(yearLevelSelect.value);
   const classSelectValue = classSelect.value;
-  const [pickedClassName, pickedSubject] = classSelectValue.split(" - ").map((s) => s.trim());
+  const [pickedClassName, pickedSubject] = classSelectValue
+    .split(" - ")
+    .map((s) => s.trim());
   const selectedAssignment = {
     className: pickedClassName || classAssignment.className,
     subjectName: pickedSubject || classAssignment.subjectName,
@@ -372,10 +375,20 @@ function handleDeleteClick(event: Event): void {
 
 function getStudentRecord(studentName: string): Student | null {
   const normalizedName = studentName.toLowerCase();
-  return studentManager.getStudents().find((studentRecord) => studentRecord.getName().toLowerCase() === normalizedName) ?? null;
+  return (
+    studentManager
+      .getStudents()
+      .find(
+        (studentRecord) =>
+          studentRecord.getName().toLowerCase() === normalizedName,
+      ) ?? null
+  );
 }
 
-function getOrCreateStudentRecord(studentName: string, yearLevel: number): Student {
+function getOrCreateStudentRecord(
+  studentName: string,
+  yearLevel: number,
+): Student {
   const existing = getStudentRecord(studentName);
   if (existing) return existing;
   const studentId = `S-${String(studentManager.getStudents().length + 1).padStart(3, "0")}`;
@@ -390,7 +403,12 @@ function getOrCreateStudentRecord(studentName: string, yearLevel: number): Stude
 }
 
 function getStudentsForCurrentTeacher(): Student[] {
-  return studentManager.getStudents().filter((studentRecord) => studentRecord.getAssignedTeacherName() === currentTeacher.getName());
+  return studentManager
+    .getStudents()
+    .filter(
+      (studentRecord) =>
+        studentRecord.getAssignedTeacherName() === currentTeacher.getName(),
+    );
 }
 
 function formatRoleName(role: Role): string {
@@ -409,15 +427,20 @@ function formatRoleName(role: Role): string {
 }
 
 function updateLayoutForRole(role: Role): void {
-  const studentColumn = document.getElementById("student-list")?.parentElement as HTMLElement | null;
-  const personnelCol = document.getElementById("personnel-column") as HTMLElement | null;
-  const teacherCol = document.getElementById("teacher-column") as HTMLElement | null;
+  const studentColumn = document.getElementById("student-list")
+    ?.parentElement as HTMLElement | null;
+  const personnelCol = document.getElementById(
+    "personnel-column",
+  ) as HTMLElement | null;
+  const teacherCol = document.getElementById(
+    "teacher-column",
+  ) as HTMLElement | null;
 
   if (!studentColumn || !personnelCol || !teacherCol) return;
 
   if (role === "regular" || role === "scholar") {
     studentColumn.style.display = "block";
-    personnelCol.style.display = "block"; // teachers
+    personnelCol.style.display = "block";
     teacherCol.style.display = "none";
 
     // headers
@@ -435,7 +458,6 @@ function updateLayoutForRole(role: Role): void {
     const th = teacherCol.querySelector("h2") as HTMLHeadingElement | null;
     if (th) th.textContent = "Teacher Profile";
   } else {
-    // administrator
     studentColumn.style.display = "block";
     personnelCol.style.display = "block";
     teacherCol.style.display = "none";
