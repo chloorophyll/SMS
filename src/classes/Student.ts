@@ -31,10 +31,6 @@ export abstract class Student extends UniversityEntity {
     return this._isEnrolled;
   }
 
-  getIsEnrolled(): boolean {
-    return this._isEnrolled;
-  }
-
   enroll(): void {
     this._isEnrolled = true;
   }
@@ -42,10 +38,6 @@ export abstract class Student extends UniversityEntity {
   drop(): void {
     this._isEnrolled = false;
     this._enrolledCourses = [];
-  }
-
-  getEnrolledCourses(): string[] {
-    return this._enrolledCourses;
   }
 
   enrollCourse(course: string): boolean {
@@ -72,14 +64,6 @@ export abstract class Student extends UniversityEntity {
     }
 
     return true;
-  }
-
-  getBalanceDue(): number {
-    return 0;
-  }
-
-  getAcademicStanding(): string {
-    return "";
   }
 
   getClassName(): string {

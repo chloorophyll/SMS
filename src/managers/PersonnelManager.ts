@@ -20,15 +20,4 @@ export class PersonnelManager {
   getPersonnel(): Personnel[] {
     return this._personnel;
   }
-
-  findPersonnel(name: string): Personnel[] {
-    const normalizedName = name.toLowerCase();
-    return this._personnel.filter((personnel) =>
-      personnel.getName().toLowerCase().includes(normalizedName),
-    );
-  }
-
-  getTotalPersonnel(): number {
-    return this._personnel.length;
-  }
 }

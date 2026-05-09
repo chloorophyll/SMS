@@ -3,6 +3,7 @@ import { RegularStudent } from "./classes/RegularStudent";
 import { Teacher } from "./classes/Teacher";
 import { Scholar } from "./classes/Scholar";
 import { Student } from "./classes/Student";
+import { Administrator } from "./classes/Administrator";
 import { StudentManager } from "./managers/StudentManager";
 
 type Role = "regular" | "scholar" | "teacher" | "administrator";
@@ -21,6 +22,10 @@ interface ClassAssignment {
 const currentTeacher = new Teacher("T-001", "Maria Santos", "Computer Science");
 currentTeacher.addCourse();
 
+const ADMIN_NAME = "Juan dela Cruz";
+const ADMIN_DEPARTMENT = "Administration";
+const ADMIN_POSITION = "Dean of Student Affairs";
+
 const subjects = ["Data Structures", "Database Systems", "Web Development"];
 
 const classAssignment: ClassAssignment = {
@@ -33,6 +38,7 @@ currentTeacher.setPrimarySubject(classAssignment.subjectName);
 
 const studentManager = new StudentManager();
 let currentUser: User | null = null;
+let currentAdmin: Administrator | null = null;
 const teachersRecords: Teacher[] = [];
 
 const loginSection = document.getElementById("login-section") as HTMLDivElement;
@@ -57,8 +63,13 @@ const userDisplay = document.getElementById("user-display") as HTMLSpanElement;
 roleDropdown.addEventListener("change", () => {
   if (roleDropdown.value === "teacher") {
     nameInput.value = currentTeacher.getName();
+  } else if (roleDropdown.value === "administrator") {
+    nameInput.value = ADMIN_NAME;
   } else {
-    if (nameInput.value === currentTeacher.getName()) {
+    if (
+      nameInput.value === currentTeacher.getName() ||
+      nameInput.value === ADMIN_NAME
+    ) {
       nameInput.value = "";
     }
   }
@@ -78,6 +89,16 @@ loginForm.addEventListener("submit", (event) => {
     if (!exists) teachersRecords.push(currentTeacher);
   }
 
+  if (role === "administrator") {
+    currentAdmin = new Administrator(
+      "A-001",
+      ADMIN_NAME,
+      ADMIN_DEPARTMENT,
+      ADMIN_POSITION,
+      studentManager,
+    );
+  }
+
   nameInput.value = "";
   roleDropdown.value = "";
   showDashboard();
@@ -85,6 +106,7 @@ loginForm.addEventListener("submit", (event) => {
 
 logoutBtn.addEventListener("click", () => {
   currentUser = null;
+  currentAdmin = null;
   hideDashboard();
 });
 
@@ -132,7 +154,7 @@ function yearLevelSelected(selectedYearLevel: number, level: number): string {
 }
 
 function subjectSelected(selectedSubject: string, subject: string): string {
-  if (selectedSubject === subject) {
+  if (selectedSubject === subject || selectedSubject.endsWith(subject)) {
     return "selected";
   } else {
     return "";
@@ -287,9 +309,22 @@ function renderTeacherView(): void {
 }
 
 function renderAdministratorView(): void {
+  if (!currentAdmin) return;
   const allStudents = studentManager.getStudents();
   const regulars = allStudents.filter((s) => s instanceof RegularStudent);
   const scholars = allStudents.filter((s) => s instanceof Scholar);
+
+  personnelList.innerHTML = `
+    <div class="card personnel">
+      <h3>Administrator Information</h3>
+      <p><strong>Name:</strong> ${currentAdmin.getName()}</p>
+      <p><strong>ID:</strong> ${currentAdmin.getId()}</p>
+      <p><strong>Department:</strong> ${currentAdmin.getDepartment()}</p>
+      <p><strong>Status:</strong> ${currentAdmin.getStatus()}</p>
+      <p><strong>Salary:</strong> PHP ${currentAdmin.computeSalary()}</p>
+    </div>
+    ${renderTeachersList()}
+  `;
 
   studentList.innerHTML = `
     <div class="card">
@@ -301,8 +336,6 @@ function renderAdministratorView(): void {
       ${renderStudentCards(scholars, "No scholars have been saved yet.", true, true)}
     </div>
   `;
-
-  personnelList.innerHTML = renderTeachersList();
 
   bindDeleteButtons();
 }
@@ -453,8 +486,8 @@ function bindDeleteButtons(): void {
 function handleDeleteClick(event: Event): void {
   const target = event.currentTarget as HTMLButtonElement;
   const id = target.getAttribute("data-id");
-  if (!id) return;
-  studentManager.removeStudent(id);
+  if (!id || !currentAdmin) return;
+  currentAdmin.dropStudent(id);
   renderDashboard();
 }
 

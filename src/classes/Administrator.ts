@@ -1,19 +1,24 @@
 import { Personnel } from "./Personnel";
+import { StudentManager } from "../managers/StudentManager";
 
 export class Administrator extends Personnel {
   private _position: string;
+  private _studentManager: StudentManager;
 
-  constructor(id: string, name: string, department: string, position: string) {
+  constructor(
+    id: string,
+    name: string,
+    department: string,
+    position: string,
+    studentManager: StudentManager,
+  ) {
     super(id, name, department, 30000);
     this._position = position;
+    this._studentManager = studentManager;
   }
 
-  getPosition(): string {
-    return this._position;
-  }
-
-  setPosition(position: string): void {
-    this._position = position;
+  dropStudent(studentId: string): void {
+    this._studentManager.removeStudent(studentId);
   }
 
   computeSalary(): number {
