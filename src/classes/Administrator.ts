@@ -28,12 +28,4 @@ export class Administrator extends Personnel {
   getStatus(): string {
     return `Administrator - ${this._position}`;
   }
-
-  getInfo(): string {
-    return `${this.getName()} | ${this.getDepartment()} | ${this.getStatus()} | PHP ${this.computeSalary()}`;
-  }
-
-  getRole(): string {
-    return "Administrator";
-  }
 }

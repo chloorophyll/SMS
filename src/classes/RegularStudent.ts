@@ -14,12 +14,4 @@ export class RegularStudent extends Student {
   getStatus(): string {
     return `Regular Student`;
   }
-
-  getInfo(): string {
-    return `${this.getName()} | ID: ${this.getId()} | Year Level: ${this.getYearLevel()} | Class: ${this.getClassName() || "Not assigned"} | Subject: ${this.getSubjectName() || "Not assigned"} | Teacher: ${this.getAssignedTeacherName() || "Not assigned"} | ${this.getStatus()} | Tuition Fee: PHP ${this.computeTuition()}`;
-  }
-
-  getRole(): string {
-    return "Student";
-  }
 }

@@ -24,20 +24,11 @@ export class Scholar extends Student {
     } else if (this._scholarshipLevel === "50%") {
       return Math.round(this._baseTuitionFee * 0.5);
     } else {
-      // 100% scholarship
       return 0;
     }
   }
 
   getStatus(): string {
     return `Scholar - ${this._scholarshipStatus}`;
-  }
-
-  getInfo(): string {
-    return `${this.getName()} | ${this.getYearLevel()} | ${this._scholarshipLevel} Scholarship | ${this.getStatus()} | PHP ${this.computeTuition()}`;
-  }
-
-  getRole(): string {
-    return "Student";
   }
 }
