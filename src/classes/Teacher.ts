@@ -21,7 +21,7 @@ export class Teacher extends Personnel {
     this._primarySubject = null;
   }
 
-  courseLoad(): number {
+  get courseLoad(): number {
     return this._courseLoad;
   }
 
@@ -33,7 +33,7 @@ export class Teacher extends Personnel {
     this._primarySubject = subjectName;
   }
 
-  primarySubject(): string | null {
+  get primarySubject(): string | null {
     return this._primarySubject;
   }
 
@@ -50,7 +50,7 @@ export class Teacher extends Personnel {
       multiplier = DEFAULT_SUBJECT_MULTIPLIER;
     }
 
-    const raw = this.baseSalary() + this._courseLoad * COURSE_BONUS;
+    const raw = this.baseSalary + this._courseLoad * COURSE_BONUS;
     return Math.round(raw * multiplier);
   }
 

@@ -10,7 +10,7 @@ export class Scholar extends Student {
     this._scholarshipStatus = "Active";
   }
 
-  scholarshipLevel(): "33%" | "50%" | "100%" {
+  get scholarshipLevel(): "33%" | "50%" | "100%" {
     return this._scholarshipLevel;
   }
 

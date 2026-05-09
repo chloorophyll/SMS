@@ -22,7 +22,7 @@ export class Administrator extends Personnel {
   }
 
   computeSalary(): number {
-    return this.baseSalary() + 10000;
+    return this.baseSalary + 10000;
   }
 
   status(): string {

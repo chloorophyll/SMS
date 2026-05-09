@@ -15,11 +15,11 @@ export abstract class Personnel extends UniversityEntity {
     this._baseSalary = baseSalary;
   }
 
-  department(): string {
+  get department(): string {
     return this._department;
   }
 
-  baseSalary(): number {
+  get baseSalary(): number {
     return this._baseSalary;
   }
 

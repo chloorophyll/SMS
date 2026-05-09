@@ -7,15 +7,15 @@ export abstract class UniversityEntity {
     this._name = name;
   }
 
-  id(): number {
+  get id(): number {
     return this._id;
   }
 
-  name(): string {
+  get name(): string {
     return this._name;
   }
 
-  rename(name: string): void {
-    this._name = name;
+  set name(value: string) {
+    this._name = value;
   }
 }

@@ -19,12 +19,16 @@ export abstract class Student extends UniversityEntity {
     this._assignedTeacherName = "";
   }
 
-  yearLevel(): number {
+  get yearLevel(): number {
     return this._yearLevel;
   }
 
-  changeYearLevel(yearLevel: number): void {
-    this._yearLevel = yearLevel;
+  set yearLevel(value: number) {
+    this._yearLevel = value;
+  }
+
+  get isEnrolled(): boolean {
+    return this._isEnrolled;
   }
 
   enroll(): void {
@@ -57,28 +61,28 @@ export abstract class Student extends UniversityEntity {
     return true;
   }
 
-  className(): string {
+  get className(): string {
     return this._className;
   }
 
-  assignClass(className: string): void {
-    this._className = className;
+  set className(value: string) {
+    this._className = value;
   }
 
-  subjectName(): string {
+  get subjectName(): string {
     return this._subjectName;
   }
 
-  assignSubject(subjectName: string): void {
-    this._subjectName = subjectName;
+  set subjectName(value: string) {
+    this._subjectName = value;
   }
 
-  assignedTeacher(): string {
+  get assignedTeacher(): string {
     return this._assignedTeacherName;
   }
 
-  assignTeacher(assignedTeacherName: string): void {
-    this._assignedTeacherName = assignedTeacherName;
+  set assignedTeacher(value: string) {
+    this._assignedTeacherName = value;
   }
 
   abstract computeTuition(): number;
